@@ -1,0 +1,46 @@
+# ===== USERS =====
+
+CREATE_USER;alice;[alice@email.com](mailto:alice@email.com)
+CREATE_USER;bob;[bob@email.com](mailto:bob@email.com)
+CREATE_USER;carol;[carol@email.com](mailto:carol@email.com)
+
+# ===== PROJECTS =====
+
+CREATE_PROJECT;BackendAPI;200
+CREATE_PROJECT;FrontendApp;120
+
+# ===== TASKS =====
+
+CREATE_TASK;ImplementAuth;2026-06-01;20;BackendAPI
+CREATE_TASK;CreateDatabaseSchema;2026-05-15;15;BackendAPI
+CREATE_TASK;LandingPageUI;2026-05-10;10;FrontendApp
+CREATE_TASK;LoginPageUI;2026-05-20;12;FrontendApp
+CREATE_TASK;DeployPipeline;2026-06-15;18;BackendAPI
+
+# ===== ASSIGN USERS =====
+
+ASSIGN_USER;1;alice
+ASSIGN_USER;2;bob
+ASSIGN_USER;3;carol
+ASSIGN_USER;4;alice
+ASSIGN_USER;5;bob
+
+# ===== STATUS FLOW =====
+
+CHANGE_STATUS;1;IN_PROGRESS
+CHANGE_STATUS;1;DONE
+
+CHANGE_STATUS;2;IN_PROGRESS
+CHANGE_STATUS;2;BLOCKED
+
+CHANGE_STATUS;3;IN_PROGRESS
+CHANGE_STATUS;3;DONE
+
+CHANGE_STATUS;4;IN_PROGRESS
+
+CHANGE_STATUS;5;IN_PROGRESS
+CHANGE_STATUS;5;DONE
+
+# ===== REPORT =====
+
+REPORT_STATUS

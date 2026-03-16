@@ -2,13 +2,15 @@ package com.nexus.service;
 
 import com.nexus.model.*;
 import com.nexus.exception.NexusValidationException;
+
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.ArrayList;
 
 public class LogProcessor {
@@ -25,11 +27,11 @@ public class LogProcessor {
         // Nota 3: refatorar os métodos action da classe LogProcessor e a enum LogCommand en uma unica classe. 
         // Talvez faça sentido caso a classe cresça de tamanho.
         //
-        CREATE_USER(3),
-        CREATE_PROJECT(3),
-        CREATE_TASK(5),
-        ASSIGN_USER(3),
-        CHANGE_STATUS(3),
+        CREATE_USER(2),
+        CREATE_PROJECT(2),
+        CREATE_TASK(4),
+        ASSIGN_USER(2),
+        CHANGE_STATUS(2),
         REPORT_STATUS(0);
 
         private int nArgs;
@@ -42,6 +44,11 @@ public class LogProcessor {
             return nArgs;
         }
 
+        /**
+         * Converte string em Enum.
+         * @param s string a ser convertida
+         * @return enum LogCommand
+         */
         public static LogCommand fromString(String s) {
             try {
                 return LogCommand.valueOf(s);
@@ -51,19 +58,23 @@ public class LogProcessor {
         }
     }
 
+    /**
+     * Cria um usuario.
+     * @param args username:0, email:1
+     * @return
+     */
     private static User actionCreateUser(List<String> args){
-        if (args.size() < 2) {
-            throw new IllegalArgumentException("CREATE_USER requires at least 2 arguments: username and email.");
-        }
         User u = new User(args.get(0), args.get(1));
         System.out.println("[LOG] Usuário criado: " + u.consultUsername());
         return u;
     }
 
+    /**
+     * Cria um projeto. 
+     * @param args projectName:0, budgetHours:1
+     * @return
+     */
     private static Project actionCreateProject(List<String> args){
-        if (args.size() < 2) {
-            throw new IllegalArgumentException("CREATE_PROJECT requires at least 2 arguments: project name and total budget.");
-        }
         Project p = new Project(args.get(0), Integer.parseInt(args.get(1)));
         System.out.println("[LOG] Projeto criado: " + p.getName());
         return p;
@@ -76,7 +87,7 @@ public class LogProcessor {
      * @return
      */
     private static FakeTask actionCreateTask(List<String> args, List<Project> projects){
-        // 1. Criar Task
+        // Criar task
         String title = args.get(0);
         LocalDate deadline;
         try {
@@ -86,14 +97,13 @@ public class LogProcessor {
         }
         FakeTask t = new FakeTask(title, deadline);
 
-        // 2. Configurar tarefa
+        // Configurar task
         try {
             int effort = Integer.parseInt(args.get(2));
             t.setEstimatedEffort(effort);
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("Esforço deve ser um número inteiro. Recebido: " + args.get(2));
         }
-
         Project p = LogProcessor.getProjectByName(projects, args.get(3));
         if (p == null) {
             throw new NexusValidationException("Projeto não encontrado: " + args.get(3));
@@ -110,7 +120,7 @@ public class LogProcessor {
      * @param users
      */
     private static void actionAssignUser(List<String> args, List<FakeTask> tasks, List<User> users){
-        // 1. parsear dados de entrada
+        // Parsear dados de entrada
         int taskId = 0;
         try {
             taskId = Integer.parseInt(args.get(0));
@@ -118,20 +128,20 @@ public class LogProcessor {
             throw new IllegalArgumentException("Task ID deve ser um número inteiro. Recebido: " + args.get(0));
         }
 
-        // 2. Filtrar
+        // Filtrar
         String userName = args.get(1);
         FakeTask t = LogProcessor.getTaskByTaskId(tasks, taskId);
         User u = LogProcessor.getUserByUsername(users, userName);
 
-        // 3. Atribuir
+        // Atribuir
         t.setOwner(u);
 
-        System.out.println("[LOG] Trarefa " + t.getId() + " atribuida ao usuário " + t.getOwner());
+        System.out.println("[LOG] Tarefa " + t.getId() + " atribuida ao usuário " + t.getOwner());
 
     }
 
     /**
-     * 
+     * Muda o status de uma task
      * @param args taskId:0, newStatus:1
      */
     private static void actionChangeStatus(List<String> args, List<FakeTask> tasks){
@@ -156,7 +166,9 @@ public class LogProcessor {
             }
             case IN_PROGRESS -> {
                 User u = task.getOwner();
-                // ??
+                if (u == null){
+                    throw new NexusValidationException("Não é possivel mudar Task para IN_PROGRESS sem ela ter um usuário.");
+                }
                 task.moveToInProgress(u);
             }
             case BLOCKED -> {
@@ -168,10 +180,9 @@ public class LogProcessor {
         } 
     }
 
-    private static void actionReportStatus(List<String> args){
-
+    private static void actionReportStatus(Workspace workspace){
+        workspace.printRelatoriosAnaliticos();
     }
-
 
     /**
      * Helper para filtrar projetos da lista por nome. Retorna nulo se projeto não existir.
@@ -181,16 +192,37 @@ public class LogProcessor {
      */
     private static Project getProjectByName(List<Project> projects, String name){
         Project p = projects.stream().filter(pr -> pr.getName().equals(name)).findFirst().orElse(null);
+        if (p == null){
+            throw new IllegalArgumentException("Não foi possivel encontrar Projeto com nome " + name);
+        }
         return p;
     }
 
+    /**
+     * Helper para filtrar usuário por nome. Retorna nulo se usuário não existir.
+     * @param users
+     * @param username
+     * @return
+     */
     private static User getUserByUsername(List<User> users, String username){
         User u = users.stream().filter(us -> us.consultUsername().equals(username)).findFirst().orElse(null);
+        if (u == null){
+            throw new IllegalArgumentException("Não foi possivel encontrar Usuario com nome " + username);
+        }
         return u;
     }
 
+    /**
+     * Helper para filtrar Task por Id. Retorna nulo se ela não existir.
+     * @param tasks
+     * @param taskId
+     * @return
+     */
     private static FakeTask getTaskByTaskId(List<FakeTask> tasks, int taskId){
         FakeTask t = tasks.stream().filter(ts -> ts.getId() == taskId).findFirst().orElse(null);
+        if (t == null){
+            throw new IllegalArgumentException("Não foi possivel encontrar Task com ID " + taskId);
+        }
         return t;
     }
 
@@ -218,7 +250,6 @@ public class LogProcessor {
             throw new IllegalArgumentException("Lista de projetos não pode ser nula.");   
         }
 
-
         try {
             LogCommand action = LogCommand.fromString(cmd[0]);
             List<String> args = List.of(cmd).subList(1, cmd.length);
@@ -238,12 +269,24 @@ public class LogProcessor {
                 case LogCommand.CREATE_TASK -> { 
                     workspace.addTask(LogProcessor.actionCreateTask(args, projects));
                 }
-                case LogCommand.ASSIGN_USER -> LogProcessor.actionAssignUser(args, users);
-                case LogCommand.CHANGE_STATUS -> LogProcessor.actionChangeStatus(args);
-                case LogCommand.REPORT_STATUS -> LogProcessor.actionReportStatus(args);
+                case LogCommand.ASSIGN_USER -> {
+                    // TODO corrigir getTasksF para getTasks.
+                    LogProcessor.actionAssignUser(args, workspace.getTasksF(), users);
+                }
+                case LogCommand.CHANGE_STATUS -> {
+                    // TODO corrigir getTasksF para getTasks
+                    LogProcessor.actionChangeStatus(args, workspace.getTasksF());
+                }
+                case LogCommand.REPORT_STATUS -> {
+                    LogProcessor.actionReportStatus(workspace);
+                }
             }
         } catch (NexusValidationException e) {
-            System.err.println("[ERRO DE REGRAS] Falha no comando '" + cmd + "': " + e.getMessage());
+            String cmdStr = "";
+            for (String s : cmd) {
+                cmdStr += s + " ";
+            }
+            System.err.println("[ERRO DE REGRAS] Falha no comando '" + cmdStr + "': " + e.getMessage());
         }
 
     }
@@ -257,6 +300,40 @@ public class LogProcessor {
      * 
      * @throws IOException se ocorrer um erro de leitura do arquivo
      */
+    public void processLog(String fileName, Workspace workspace, List<User> users) {
+        // Nota: separação de responsabilidades: método processLog() é responsavel por processar o arquivo 
+        // e extrair ocs comandos. O método responsável por executar o comando de fato é
+        // executeCommand(). Isto facilita a manutenção futura do código. 
+
+        List<Project> projects = new ArrayList<>();
+        try (var resource = getClass().getClassLoader().getResourceAsStream(fileName)) {
+            if (resource == null) {
+                throw new IOException("Arquivo não encontrado no classpath: " + fileName);
+            }
+            try (var reader = new BufferedReader(new InputStreamReader(resource))) {
+
+                reader.lines()
+                    .filter(line -> !line.isBlank())
+                    .filter(line -> !line.startsWith("#"))
+                    .forEach(line -> {
+
+                        String[] p = line.split(";");
+
+                        try {
+                            LogProcessor.executeCommand(p, workspace, users, projects);
+                        } catch (NexusValidationException e) {
+                            System.err.println("[ERRO DE REGRAS] Falha no comando '" 
+                                + line + "': " + e.getMessage());
+                        }
+
+                    });
+            }
+        } catch (IOException e) {
+            System.err.println("[ERRO FATAL] " + e.getMessage());
+        }
+    }
+
+    /** 
     public void processLog(String fileName, Workspace workspace, List<User> users) {
         // Nota: separação de responsabilidades: método processLog() é responsavel por processar o arquivo 
         // e extrair ocs comandos. O método responsável por executar o comando de fato é
@@ -290,5 +367,6 @@ public class LogProcessor {
             System.err.println("[ERRO FATAL] " + e.getMessage());
         }
     }
+    */
 
 }
