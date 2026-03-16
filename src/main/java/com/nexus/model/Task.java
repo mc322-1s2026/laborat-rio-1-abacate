@@ -2,6 +2,8 @@ package com.nexus.model;
 
 import java.time.LocalDate;
 
+import com.nexus.exception.NexusValidationException;
+
 public class Task {
     // Métricas Globais (Alunos implementam a lógica de incremento/decremento)
     public static int totalTasksCreated = 0;
@@ -31,6 +33,14 @@ public class Task {
      * Regra: Só é possível se houver um owner atribuído e não estiver BLOCKED.
      */
     public void moveToInProgress(User user) {
+        if ((owner == null) && this.status == TaskStatus.BLOCKED) {
+            totalValidationErrors++;
+            throw new NexusValidationException("Não é possível mover para InProgress");
+        }
+        else{ 
+            this.status = TaskStatus.IN_PROGRESS;
+            activeWorkload++;
+        }
         // TODO: Implementar lógica de proteção e atualizar activeWorkload
         // Se falhar, incrementar totalValidationErrors e lançar NexusValidationException
     }
@@ -40,6 +50,12 @@ public class Task {
      * Regra: Só pode ser movida para DONE se não estiver BLOCKED.
      */
     public void markAsDone() {
+        if (this.status == TaskStatus.BLOCKED) {
+            throw new IllegalStateException("Tarefas com status BLOCKED não podem mudar para DONE");
+        }
+        else {
+            this.status = TaskStatus.DONE;
+        }
         // TODO: Implementar lógica de proteção e atualizar activeWorkload (decrementar)
     }
 
