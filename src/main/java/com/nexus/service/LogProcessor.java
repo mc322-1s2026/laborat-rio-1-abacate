@@ -8,9 +8,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
-import java.util.Collection;
 import java.util.ArrayList;
 
 public class LogProcessor {
@@ -81,7 +79,10 @@ public class LogProcessor {
     }
 
     /**
-     * 
+     * Cria uma Task. Atribui os seguintes ítems a task criada:
+     * - Deadline;
+     * - Esforço;
+     * - Projeto pai.
      * @param args taskName:0, deadline:1, effort:2, projectName:3
      * @param projects
      * @return
@@ -115,7 +116,8 @@ public class LogProcessor {
     }
 
     /***
-     * 
+     * Atribui uma task a um usário.
+     * - 
      * @param args taskId:0, username:1
      * @param users
      */
@@ -252,6 +254,7 @@ public class LogProcessor {
 
         try {
             LogCommand action = LogCommand.fromString(cmd[0]);
+            System.out.println( ">>>>>>>>>>>" + cmd[0]);
             List<String> args = List.of(cmd).subList(1, cmd.length);
 
             if (action.getNArgs() > args.size()) {
@@ -288,7 +291,6 @@ public class LogProcessor {
             }
             System.err.println("[ERRO DE REGRAS] Falha no comando '" + cmdStr + "': " + e.getMessage());
         }
-
     }
 
 
@@ -324,6 +326,9 @@ public class LogProcessor {
                         } catch (NexusValidationException e) {
                             System.err.println("[ERRO DE REGRAS] Falha no comando '" 
                                 + line + "': " + e.getMessage());
+                        } catch (IllegalArgumentException e) {
+                            System.err.println("[ERRO DE ARGUMENTOS] Argumento inválido no comando '" 
+                                + line + "': " + e.getMessage());
                         }
 
                     });
@@ -332,41 +337,4 @@ public class LogProcessor {
             System.err.println("[ERRO FATAL] " + e.getMessage());
         }
     }
-
-    /** 
-    public void processLog(String fileName, Workspace workspace, List<User> users) {
-        // Nota: separação de responsabilidades: método processLog() é responsavel por processar o arquivo 
-        // e extrair ocs comandos. O método responsável por executar o comando de fato é
-        // executeCommand(). Isto facilita a manutenção futura do código. 
-
-        List<Project> projects = new ArrayList<>();
-        try {
-            // Busca o arquivo dentro da pasta de recursos do projeto (target/classes)
-            var resource = getClass().getClassLoader().getResourceAsStream(fileName);
-            
-            if (resource == null) {
-                throw new IOException("Arquivo não encontrado no classpath: " + fileName);
-            }
-
-            try (java.util.Scanner s = new java.util.Scanner(resource).useDelimiter("\\A")) {
-                String content = s.hasNext() ? s.next() : "";
-                List<String> lines = List.of(content.split("\\R"));
-                
-                for (String line : lines) {
-                    if (line.isBlank() || line.startsWith("#")) continue;
-
-                    String[] p = line.split(";");
-                    try {
-                        LogProcessor.executeCommand(p, workspace, users, projects);
-                    } catch (NexusValidationException e) {
-                        System.err.println("[ERRO DE REGRAS] Falha no comando '" + line + "': " + e.getMessage());
-                    }
-                }
-            }
-        } catch (IOException e) {
-            System.err.println("[ERRO FATAL] " + e.getMessage());
-        }
-    }
-    */
-
 }

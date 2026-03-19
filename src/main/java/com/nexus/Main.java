@@ -170,12 +170,12 @@ public class Main {
 
 
     private static void runTests(){
-        String file1 = "t1_happy.txt";
+        //String file1 = "t1_happy.txt";
         String file2 = "t2_erros.txt";
         String file3 = "t3_mixed.txt";
         
-        Main.printHeader(file1);
-        Main.logProcessor.processLog(file1, workspace, users);
+        //Main.printHeader(file1);
+        //Main.logProcessor.processLog(file1, workspace, users);
         Main.printHeader(file2);
         Main.logProcessor.processLog(file2, workspace, users);
         Main.printHeader(file3);
