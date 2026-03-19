@@ -5,6 +5,7 @@ import java.util.regex.Pattern;
 public class User {
     private final String username;
     private final String email;
+//    private final String taskString;
     private static final Pattern EMAIL_VALIDO = 
     Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
 
@@ -23,6 +24,7 @@ public class User {
 
         this.username = username;
         this.email = email;
+  //      this.taskString = taskString;
     }
 
     public static boolean validateEmail(String email) {
