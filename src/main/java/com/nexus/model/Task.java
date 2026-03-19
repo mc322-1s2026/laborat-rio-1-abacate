@@ -7,11 +7,11 @@ import com.nexus.exception.NexusValidationException;
 public class Task {
     // Métricas Globais (Alunos implementam a lógica de incremento/decremento)
     public static int totalTasksCreated = 0;
-    public static int totalValidationErrors = 0;
     public static int activeWorkload = 0;
 
     private static int nextId = 1;
 
+    private  int effort = 0;
     private int id;
     private LocalDate deadline; // Imutável após o nascimento
     private String title;
@@ -23,29 +23,31 @@ public class Task {
         this.deadline = deadline;
         this.title = title;
         this.status = TaskStatus.TO_DO;
-        
-        // Ação do Aluno:
-        totalTasksCreated++; 
+        Task.totalTasksCreated++; 
     }
 
     /**
      * Move a tarefa para IN_PROGRESS.
      * Regra: Só é possível se houver um owner atribuído e não estiver BLOCKED.
+     * @param user: usuário
+     * @throws NexusValidationException: lança exeção caso a Task não possua usuário atribuído e não foi passado
+     * um usuário valido como argumento.
      */
     public void moveToInProgress(User user) {
-        if ((owner == null) && this.status == TaskStatus.BLOCKED) {
-            totalValidationErrors++;
-            throw new NexusValidationException("Não é possível mover para InProgress");
+        if ((this.owner == null) && (user == null)) {
+            throw new NexusValidationException("Não é possível mover para IN_PROGRESS Task sem Owner");
         }
-        else{ 
-            this.status = TaskStatus.IN_PROGRESS;
-            activeWorkload++;
+        else if ((this.owner == null) && (user != null)){
+            System.out.println("[INFO] Atribuindo novo usuário " + user.toString() + " a Task " + this.toString() + ".");
+            this.setOwner(user);
         }
-        // TODO: Implementar lógica de proteção e atualizar activeWorkload
-        // Se falhar, incrementar totalValidationErrors e lançar NexusValidationException
+
+        this.status = TaskStatus.IN_PROGRESS;
+        activeWorkload++;
     }
 
-    /**
+
+    /***
      * Finaliza a tarefa.
      * Regra: Só pode ser movida para DONE se não estiver BLOCKED.
      */
@@ -56,7 +58,6 @@ public class Task {
         else {
             this.status = TaskStatus.DONE;
         }
-        // TODO: Implementar lógica de proteção e atualizar activeWorkload (decrementar)
     }
 
     public void setBlocked(boolean blocked) {
@@ -73,4 +74,24 @@ public class Task {
     public String getTitle() { return title; }
     public LocalDate getDeadline() { return deadline; }
     public User getOwner() { return owner; }
+    public void setOwner(User owner){
+        //if (owner == null){
+        //    throw new IllegalArgumentException("Usuário não pode ser Nulo!");
+        //}
+        this.owner = owner;
+    }
+
+
+    public int getEstimatedEffort(){
+        return this.effort;
+    }
+
+    public void setEstimatedEffort(int effort){
+        if (effort < 0){
+            throw new IllegalArgumentException("effort is null1");
+        }
+        this.effort = effort;
+    }
+
+
 }
