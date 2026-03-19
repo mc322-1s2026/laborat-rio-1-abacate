@@ -2,7 +2,7 @@
 [![Open in Codespaces](https://classroom.github.com/assets/launch-codespace-2972f46106e565e64193e422d61a12cf1da4916b45550586e14ef0a7c637dd04.svg)](https://classroom.github.com/open-in-codespaces?assignment_repo_id=23069301)
 # Lab 1: O Núcleo do Nexus — Arquitetura e Consistência
 
-## 1. Sumário da Atividade
+## 1. Sumário da Atividade 
 
 Neste laboratório você deverá incrementar um sistema de gestão de tarefas corporativas, o **Nexus**. O foco principal dessa atividade será avaliar a sua capacidade de incrementar um modelo a partir de implementação de métodos e classes representativas, validação de regras de negócio e aplicação de boas práticas de Orientação a Objetos e o uso de Java moderno (Streams, Javadoc, etc). As seções estão divididas em:
 
