@@ -73,4 +73,10 @@ public class Task {
     public String getTitle() { return title; }
     public LocalDate getDeadline() { return deadline; }
     public User getOwner() { return owner; }
+    public void setOwner(User owner) {
+        if (owner == null) {
+            throw new IllegalArgumentException("Usuário não pode ser nulo");
+        }
+        this.owner = owner;
+    }
 }
