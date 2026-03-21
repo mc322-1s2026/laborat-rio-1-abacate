@@ -33,12 +33,12 @@ public class Workspace {
     }
   
 
-//    public List<User> overloadUsers(List <User> users) {
-//        return users.stream()
-//            .filter(user -> user.calculateWorkload(TaskStatus.IN_PROGRESS) > 10)
-//            .collect(Collectors.toList());
+    public List<User> overloadUsers(List <User> users) {
+        return users.stream()
+            .filter(user -> user.calculateWorkload(TaskStatus.IN_PROGRESS) > 10)
+            .collect(Collectors.toList());
             
-//    }
+    }
 
     public double projectHealth() {
         List <Task> tasks = getTasks();
