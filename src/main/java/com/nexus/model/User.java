@@ -9,13 +9,14 @@ import com.nexus.exception.NexusValidationException;
 import com.nexus.model.Task;
 
 
+import com.nexus.exception.NexusValidationException;
+
 public class User {
     private final String username;
     private final String email;
     private static final Pattern EMAIL_VALIDO = 
     Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
-    private List<Task> tasks = new ArrayList<>(); 
-
+    private List<Task> tasks = new ArrayList<>();
 
     public User(String username, String email) {
         if (username == null || username.isBlank()) {
@@ -31,6 +32,7 @@ public class User {
 
         this.username = username;
         this.email = email;
+  //      this.taskString = taskString;
     }
 
     public static boolean validateEmail(String email) {
@@ -63,24 +65,25 @@ public class User {
             task.setOwner(this);
         }
     }
-
+       
     /**
      * Remove a task do usuário. Somente é possivel se a task estiver como TO_DO.
      * @param task
      * @throws NexusValidationException: caso o estado da task seja diferente de TO_DO.
-     */
-    public  void removeTask(Task task){
-        if (task.getStatus() != TaskStatus.TO_DO){
-            throw new NexusValidationException("Não é possível remover task de um usuário em um estado diferente de TO_DO.");
+     */              
+    public void removeTask(Task task) {
+        if (task.getStatus() != TaskStatus.TO_DO) {
+            throw new NexusValidationException("Não é possível remover task de um usuário em um estado diferente de TO_DO");        
         }
         this.tasks.removeIf(t -> t.getId() == task.getId());
-        task.setOwner(null);
-
+        task.setOwner(this);
     }
 
-    public long calculateWorkload() {
-        //List <String> tasksinprogess = null;
-        //filter.(TaskStatus = "IN PROGRESS");
-        return 0; 
+    public long calculateWorkload(TaskStatus status) {
+        return tasks.stream()
+            .filter(task -> task.getStatus() == status)
+            .count();
+
     }
 }
+

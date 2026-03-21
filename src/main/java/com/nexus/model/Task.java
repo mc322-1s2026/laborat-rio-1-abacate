@@ -74,14 +74,7 @@ public class Task {
     public String getTitle() { return title; }
     public LocalDate getDeadline() { return deadline; }
     public User getOwner() { return owner; }
-    public void setOwner(User owner){
-        //if (owner == null){
-        //    throw new IllegalArgumentException("Usuário não pode ser Nulo!");
-        //}
-        this.owner = owner;
-    }
-
-
+  
     public int getEstimatedEffort(){
         return this.effort;
     }
@@ -91,7 +84,13 @@ public class Task {
             throw new IllegalArgumentException("effort is null1");
         }
         this.effort = effort;
-    }
-
+    }  
+  
+    public void setOwner(User owner) {
+        if (owner == null) {
+            throw new IllegalArgumentException("Usuário não pode ser nulo");
+        }
+        this.owner = owner;
+    } 
 
 }
