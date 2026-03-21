@@ -1,9 +1,11 @@
 package com.nexus.service;
 
-import com.nexus.model.Task;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Collections;
+import java.util.List;
+
+import com.nexus.model.Task;
+
 
 public class Workspace {
     private final List<Task> tasks = new ArrayList<>();
