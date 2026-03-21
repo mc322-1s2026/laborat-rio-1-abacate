@@ -53,6 +53,9 @@ public class Main {
                     String file = (logChoice.equals("1")) ? "log_v1.txt" : "log_v2.txt";
                     logProcessor.processLog(file, workspace, users);
                 }
+                case "5" ->{
+                    Main.runTests();
+                }
                 default -> System.out.println("\n[!] Opção inválida.");
             }
         }
@@ -155,5 +158,27 @@ public class Main {
     private static String truncar(String str, int tam) {
         if (str == null) return "";
         return str.length() > tam ? str.substring(0, tam - 3) + "..." : str;
+    }
+
+    private static void printHeader(String title){
+        String hLine = "###############################################################################";
+        System.out.println(hLine);
+        System.out.println("##" + title);
+        System.out.println(hLine);
+        System.out.println("");
+    }    
+
+
+    private static void runTests(){
+        //String file1 = "t1_happy.txt";
+        String file2 = "t2_erros.txt";
+        String file3 = "t3_mixed.txt";
+        
+        //Main.printHeader(file1);
+        //Main.logProcessor.processLog(file1, workspace, users);
+        Main.printHeader(file2);
+        Main.logProcessor.processLog(file2, workspace, users);
+        Main.printHeader(file3);
+        Main.logProcessor.processLog(file3, workspace, users);
     }
 }

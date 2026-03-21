@@ -1,0 +1,43 @@
+# ===== USERS =====
+
+CREATE_USER;alice;[alice@email.com](mailto:alice@email.com)
+CREATE_USER;bob;[bob@email.com](mailto:bob@email.com)
+
+# ===== PROJECTS =====
+
+CREATE_PROJECT;MobileApp;150
+
+# ===== TASKS =====
+
+CREATE_TASK;DesignUI;2026-05-01;12;MobileApp
+CREATE_TASK;ImplementAPI;2026-05-20;20;MobileApp
+
+# ===== erro: projeto inexistente =====
+
+CREATE_TASK;GhostTask;2026-05-10;5;NoProject
+
+# ===== ASSIGN =====
+
+ASSIGN_USER;1;alice
+ASSIGN_USER;2;bob
+
+# ===== erro: usuário inexistente =====
+
+ASSIGN_USER;2;charlie
+
+# ===== STATUS =====
+
+CHANGE_STATUS;1;IN_PROGRESS
+CHANGE_STATUS;1;DONE
+
+CHANGE_STATUS;2;IN_PROGRESS
+
+# ===== erro: status inválido =====
+
+CHANGE_STATUS;2;FINISHED
+
+# ===== continuar fluxo =====
+
+CHANGE_STATUS;2;DONE
+
+REPORT_STATUS
