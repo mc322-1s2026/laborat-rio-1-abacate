@@ -1,53 +1,40 @@
 # ===== ERRO: criar tarefa sem projeto =====
-
 CREATE_TASK;TaskWithoutProject;2026-06-01;10;UnknownProject
 
 # ===== ERRO: criar projeto com budget inválido =====
-
 CREATE_PROJECT;BadProject;abc
 
 # ===== ERRO: email inválido =====
-
 CREATE_USER;john;not-an-email
 
 # ===== criação válida =====
-
-CREATE_USER;john;[john@email.com](mailto:john@email.com)
+CREATE_USER;john;john@email.com
 CREATE_PROJECT;CoreSystem;100
 
 # ===== ERRO: esforço inválido =====
-
 CREATE_TASK;InvalidEffort;2026-05-01;abc;CoreSystem
 
 # ===== criação válida =====
-
 CREATE_TASK;RealTask;2026-05-01;10;CoreSystem
 
 # ===== ERRO: usuário inexistente =====
-
 ASSIGN_USER;1;ghostUser
 
 # ===== ERRO: task inexistente =====
-
 ASSIGN_USER;999;john
 
 # ===== ASSIGN válido =====
-
 ASSIGN_USER;1;john
 
 # ===== ERRO: status inexistente =====
-
 CHANGE_STATUS;1;STARTED
 
 # ===== ERRO: task inexistente =====
-
 CHANGE_STATUS;99;IN_PROGRESS
 
 # ===== fluxo válido =====
-
 CHANGE_STATUS;1;IN_PROGRESS
 CHANGE_STATUS;1;DONE
 
 # ===== relatório =====
-
 REPORT_STATUS
