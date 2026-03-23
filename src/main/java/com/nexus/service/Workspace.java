@@ -13,12 +13,21 @@ import com.nexus.model.Task;
 import com.nexus.model.TaskStatus;
 import com.nexus.model.User;
 
+/**
+ * Classe representando um workspace.
+ */
 public class Workspace {
 
     private List<Project> projects = new ArrayList<>();
     private List<User> users = new ArrayList<>();
-    private List<Task> tasks = new ArrayList<>();
     private final String hLine = "===============================================================================";
+
+    /**
+     * Construtor do workspace.
+     */
+    public Workspace() {
+
+    }
 
     /**
      * Adiciona Projeto a lista de projetos.
@@ -26,7 +35,16 @@ public class Workspace {
      * @param project projeto novo.
      */
     public void addProject(Project project) {
-        this.projects.add(project);
+        if (project == null)
+            return;
+        boolean exists = this.projects.stream()
+                .anyMatch(p -> p.getName() == project.getName());
+
+        if (!exists) {
+            this.projects.add(project);
+        } else {
+            System.out.println("[WARN] Projeto '" + project.getName() + "' já existe no Workspace.");
+        }
     }
 
     /**
@@ -44,7 +62,17 @@ public class Workspace {
      * @param user novo usuário.
      */
     public void addUser(User user) {
-        this.users.add(user);
+        if (user == null)
+            return;
+
+        boolean exists = this.users.stream()
+                .anyMatch(u -> u.getId() == user.getId());
+
+        if (!exists) {
+            this.users.add(user);
+        } else {
+            System.out.println("[WARN] Usuário com ID " + user.getId() + " já está cadastrado.");
+        }
     }
 
     /**
@@ -57,21 +85,17 @@ public class Workspace {
     }
 
     /**
-     * Adiciona task ao workspace.
-     * 
-     * @param task task a ser adicionada.
-     */
-    public void addTask(Task task) {
-        this.tasks.add(task);
-    }
-
-    /**
-     * Retorna lista não modificável de tasks do workspace.
+     * Retorna todas as tasks de todos os projetos.
      * 
      * @return lista de tasks.
      */
-    public List<Task> getTasks() {
-        return Collections.unmodifiableList(this.tasks);
+    public List<Task> getAllTasks() {
+        List<Task> tasks = new ArrayList<Task>();
+        for (Project p : this.projects) {
+            List<Task> projectTasks = p.getTasks();
+            tasks.addAll(projectTasks);
+        }
+        return tasks;
     }
 
     /**
@@ -111,16 +135,16 @@ public class Workspace {
      * @return Percentual de tarefas completadas.
      */
     public double projectHealth(Project project) {
-        if (this.tasks == null || this.tasks.isEmpty()) {
+        if (project == null) {
             return 0.0;
         }
         List<Task> projectTasks = project.getTasks();
-        if (projectTasks.isEmpty())
+        if (projectTasks.isEmpty()) {
             return 0.0;
+        }
 
-        long totalTasks = this.tasks.size();
-
-        long completedTasks = this.tasks.stream()
+        long totalTasks = projectTasks.size();
+        long completedTasks = projectTasks.stream()
                 .filter(task -> task.getStatus() == TaskStatus.DONE)
                 .count();
 
@@ -135,7 +159,8 @@ public class Workspace {
      * @return Status com maior número de tasks, exeto done.
      */
     public Optional<TaskStatus> globalBottlenecks() {
-        return this.tasks.stream()
+        List<Task> tasks = this.getAllTasks();
+        return tasks.stream()
                 .filter(task -> task.getStatus() != TaskStatus.DONE)
                 .collect(Collectors.groupingBy(Task::getStatus, Collectors.counting()))
                 .entrySet()
@@ -162,27 +187,36 @@ public class Workspace {
         System.out.println("");
 
         System.out.println("1. Top Performers");
-        List<User> users = this.topPerformers();
-        int i = 1;
-        for (User user : users) {
-            System.out.println(i + ". " + user);
-            i++;
-        }
+        List<User> topPerformers = this.topPerformers();
+        // int i = 1;
+        // for (User user : users) {
+        // System.out.println(i + ". " + user);
+        // i++;
+        // }
+        java.util.stream.IntStream.range(0, topPerformers.size())
+                .forEach(i -> System.out.println((i + 1) + ". " + topPerformers.get(i)));
         System.out.println();
 
         System.out.println("2. Overloaded Users");
-        users.clear();
-        users = this.overloadUsers();
-        i = 1;
-        for (User user : users) {
-            System.out.println(i + ". " + user);
-            i++;
-        }
+        List<User> overloaded = this.overloadUsers();
+        // i = 1;
+        // for (User user : users) {
+        // System.out.println(i + ". " + user);
+        // i++;
+        // }
+        java.util.stream.IntStream.range(0, overloaded.size())
+                .forEach(i -> System.out.println((i + 1) + ". " + overloaded.get(i)));
         System.out.println();
 
         System.out.println("3. Project Health");
-        double conclusao = this.projectHealth();
-        System.out.println("Porcentagem de Conclusão: " + conclusao + "%");
+        // for (Project proj : this.projects) {
+        // double conclusao = proj.projectHealth();
+        // System.out.println(proj.getName() + " -> Porcentagem de Conclusão: " +
+        // conclusao + "%");
+        // }
+        this.projects.stream()
+                .forEach(proj -> System.out
+                        .println(proj.getName() + " -> Porcentagem de Conclusão: " + proj.projectHealth() + "%"));
         System.out.println();
 
         System.out.println("4. Global Bottlenecks");

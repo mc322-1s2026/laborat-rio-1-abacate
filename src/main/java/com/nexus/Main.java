@@ -7,10 +7,16 @@ import java.util.List;
 import java.util.Scanner;
 
 import com.nexus.exception.NexusValidationException;
+import com.nexus.model.Project;
 import com.nexus.model.Task;
 import com.nexus.model.User;
 import com.nexus.service.LogProcessor;
 import com.nexus.service.Workspace;
+import com.nexus.tests.TestLogProcessor;
+import com.nexus.tests.TestProject;
+import com.nexus.tests.TestTask;
+import com.nexus.tests.TestUser;
+import com.nexus.tests.TestWorkspace;
 
 /**
  * Ponto de entrada para a aplicação Nexus.
@@ -26,6 +32,7 @@ public class Main {
     private static final Workspace workspace = new Workspace();
     private static final List<User> users = new ArrayList<>();
     private static final LogProcessor logProcessor = new LogProcessor();
+    private static Project defProject = new Project("Default", 100);
 
     /**
      * Inicia a aplicação e processa comandos do usuário até a terminação.
@@ -53,7 +60,7 @@ public class Main {
                     String file = (logChoice.equals("1")) ? "log_v1.txt" : "log_v2.txt";
                     logProcessor.processLog(file, workspace, users);
                 }
-                case "5" ->{
+                case "5" -> {
                     Main.runTests();
                 }
                 default -> System.out.println("\n[!] Opção inválida.");
@@ -63,20 +70,22 @@ public class Main {
 
     /**
      * Imprime o menu principal na saída padrão.
-     * <p>As opções do menu correspondem às escolhas tratadas em
+     * <p>
+     * As opções do menu correspondem às escolhas tratadas em
      * {@link #main(String[])}.
      * </p>
      */
     private static void displayMenu() {
         System.out.print("""
-            
-            ======= NEXUS CORE: MENU =======
-            1. Adicionar Usuário
-            2. Adicionar Tarefa
-            3. Listar Todas as Tarefas
-            4. Processar Log de Ações
-            0. Sair
-            Escolha uma opção:\s""");
+
+                ======= NEXUS CORE: MENU =======
+                1. Adicionar Usuário
+                2. Adicionar Tarefa
+                3. Listar Todas as Tarefas
+                4. Processar Log de Ações
+                5. Rodar testes
+                0. Sair
+                Escolha uma opção:\s""");
     }
 
     /**
@@ -103,6 +112,8 @@ public class Main {
      * Coleta detalhes da tarefa do usuário, constrói uma {@link Task} e
      * a acrescenta ao workspace. Erros de parsing de data são informados no
      * stderr.
+     * Observação: aqui, pela evolução do produto, as Tasks devem ser atreladas a um
+     * projeto. Por isso, criamos um projeto default para a classe Main.
      */
     private static void addTask() {
         try {
@@ -112,7 +123,9 @@ public class Main {
             LocalDate deadline = LocalDate.parse(scanner.nextLine());
 
             Task newTask = new Task(title, deadline);
-            workspace.addTask(newTask);
+            // workspace.addTask(newTask);
+            defProject.addTask(newTask);
+            workspace.addProject(defProject);
             System.out.println("[OK] Tarefa adicionada ao backlog.");
         } catch (DateTimeParseException e) {
             System.err.println("[ERRO] Formato de data inválido. Use AAAA-MM-DD.");
@@ -125,7 +138,7 @@ public class Main {
      * de notificação.
      */
     private static void listTasks() {
-        List<Task> tasks = workspace.getTasks();
+        List<Task> tasks = workspace.getAllTasks();
         if (tasks.isEmpty()) {
             System.out.println("\n[!] Nenhuma tarefa no sistema.");
             return;
@@ -156,29 +169,16 @@ public class Main {
      * @return uma string possivelmente reduzida; nunca {@code null}
      */
     private static String truncar(String str, int tam) {
-        if (str == null) return "";
+        if (str == null)
+            return "";
         return str.length() > tam ? str.substring(0, tam - 3) + "..." : str;
     }
 
-    private static void printHeader(String title){
-        String hLine = "###############################################################################";
-        System.out.println(hLine);
-        System.out.println("##" + title);
-        System.out.println(hLine);
-        System.out.println("");
-    }    
-
-
-    private static void runTests(){
-        //String file1 = "t1_happy.txt";
-        String file2 = "t2_erros.txt";
-        String file3 = "t3_mixed.txt";
-        
-        //Main.printHeader(file1);
-        //Main.logProcessor.processLog(file1, workspace, users);
-        Main.printHeader(file2);
-        Main.logProcessor.processLog(file2, workspace, users);
-        Main.printHeader(file3);
-        Main.logProcessor.processLog(file3, workspace, users);
+    private static void runTests() {
+        TestUser.run();
+        TestTask.run();
+        TestProject.run();
+        TestLogProcessor.run();
+        TestWorkspace.run();
     }
 }

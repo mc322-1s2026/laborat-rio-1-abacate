@@ -102,17 +102,15 @@ public class LogProcessor {
         // Criar task
         String title = args.get(0);
         LocalDate deadline;
+        int effort = 0;
         try {
             deadline = LocalDate.parse(args.get(1));
         } catch (Exception e) {
             throw new IllegalArgumentException("Deadline deve estar no formato YYYY-MM-DD. Recebido: " + args.get(1));
         }
-        Task t = new Task(title, deadline);
-
-        // Configurar task
         try {
-            int effort = Integer.parseInt(args.get(2));
-            t.setEstimatedEffort(effort);
+            effort = Integer.parseInt(args.get(2));
+
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("Esforço deve ser um número inteiro. Recebido: " + args.get(2));
         }
@@ -120,7 +118,11 @@ public class LogProcessor {
         if (p == null) {
             throw new NexusValidationException("Projeto não encontrado: " + args.get(3));
         }
+
+        Task t = new Task(title, deadline);
+        // Configurar task
         t.assignToProject(p);
+        t.setEstimatedEffort(effort);
 
         System.out.println("[LOG] Tarefa criada: " + t.getTitle());
         return t;
@@ -291,13 +293,14 @@ public class LogProcessor {
                     projects.add(LogProcessor.actionCreateProject(args));
                 }
                 case LogCommand.CREATE_TASK -> {
-                    workspace.addTask(LogProcessor.actionCreateTask(args, projects));
+                    // workspace.addTask(LogProcessor.actionCreateTask(args, projects));
+                    Task t = LogProcessor.actionCreateTask(args, projects);
                 }
                 case LogCommand.ASSIGN_USER -> {
-                    LogProcessor.actionAssignUser(args, workspace.getTasks(), users);
+                    LogProcessor.actionAssignUser(args, workspace.getAllTasks(), users);
                 }
                 case LogCommand.CHANGE_STATUS -> {
-                    LogProcessor.actionChangeStatus(args, workspace.getTasks());
+                    LogProcessor.actionChangeStatus(args, workspace.getAllTasks());
                 }
                 case LogCommand.REPORT_STATUS -> {
                     LogProcessor.actionReportStatus(workspace);

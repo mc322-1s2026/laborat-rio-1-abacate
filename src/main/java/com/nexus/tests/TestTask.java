@@ -9,7 +9,6 @@ import com.nexus.model.User;
 public class TestTask {
 
     public static void run() {
-
         System.out.println("=== INICIANDO TESTES ===\n");
         TestTask.testErrosDeTransicao();
         TestTask.testSetOwnerDireto();

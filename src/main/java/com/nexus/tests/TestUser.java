@@ -20,16 +20,22 @@ public class TestUser {
 
     private static void testInstanciacaoComDadosInvalidos() {
         System.out.println("> Teste: testInstanciacaoComDadosInvalidos");
+        int errosCapturados = 0;
         try {
             new User("", "email@valido.com");
             throw new RuntimeException("FALHA: User aceitou username vazio.");
         } catch (IllegalArgumentException e) {
+            errosCapturados++;
         }
 
         try {
             new User("Usuario1", "email_invalido");
             throw new RuntimeException("FALHA: User aceitou email sem formato correto.");
         } catch (IllegalArgumentException e) {
+            errosCapturados++;
+        }
+        if (errosCapturados != 2) {
+            throw new RuntimeException("FALHA: quantidade de erros deveria ser 2.");
         }
         System.out.println("Sucesso: testInstanciacaoComDadosInvalidos");
     }
@@ -95,140 +101,4 @@ public class TestUser {
         System.out.println("Sucesso: testWorkloadEUserIntegridade");
     }
 
-    /*
-     * private static void testInstanciacaoComDadosInvalidos() {
-     * System.out.println("> Teste: Instanciação com dados invalidos");
-     * // Teste 1: Username Nulo
-     * try {
-     * new User(null, "contato@nexus.com");
-     * System.err.println("FALHA: Deveria ter lançado erro para Username Nulo.");
-     * } catch (IllegalArgumentException e) {
-     * System.out.println("SUCESSO: Capturou erro esperado para Username Nulo: " +
-     * e.getMessage());
-     * }
-     * 
-     * // Teste 2: Email Inválido
-     * try {
-     * new User("Anderson", "email-sem-arroba.com");
-     * System.err.println("FALHA: Deveria ter lançado erro para Email Inválido.");
-     * } catch (IllegalArgumentException e) {
-     * System.out.println("SUCESSO: Capturou erro esperado para Email Inválido: " +
-     * e.getMessage());
-     * }
-     * }
-     * 
-     * private static void testInstanciacaoCorretaEId() {
-     * System.out.println("> Teste: Instanciação correta e checagem do ID.");
-     * try {
-     * User userValido = new User("Anderson", "anderson@nexus.com");
-     * if (userValido.consultUsername().equals("Anderson")
-     * && userValido.consultEmail().equals("anderson@nexus.com")) {
-     * System.out.println("SUCESSO: Usuário instanciado com dados corretos.");
-     * }
-     * System.out.println("INFO: ID gerado para o usuário: " + userValido.getId());
-     * 
-     * if (userValido.getId() >= 0) {
-     * System.out.println("SUCESSO: Atribuição de ID funcionando.");
-     * }
-     * 
-     * } catch (Exception e) {
-     * throw new
-     * Exception("FALHA: Ocorreu um erro inesperado ao instanciar usuário válido: "
-     * + e.getMessage());
-     * }
-     * }
-     * 
-     * private static void testMovimentacoesInvalidasETotalErros() {
-     * System.out.println("Teste: Contagem de Erros de Validação");
-     * Task task = new Task("Task Errada", LocalDate.now().plusDays(5));
-     * int errosContabilizadosManualmente = 0;
-     * 
-     * // Erro 1: Bloquear uma tarefa que já está DONE
-     * try {
-     * task.markAsDone(); // vai para DONE (sucesso)
-     * task.setBlocked(true); // ERRO!
-     * } catch (NexusValidationException e) {
-     * errosContabilizadosManualmente++;
-     * }
-     * 
-     * // Erro 2: Mover para DONE uma tarefa que está BLOCKED
-     * try {
-     * task.setBlocked(false); // Volta para TO_DO
-     * task.setBlocked(true); // Agora está BLOCKED corretamente
-     * task.markAsDone(); // ERRO!
-     * } catch (NexusValidationException e) {
-     * errosContabilizadosManualmente++;
-     * }
-     * 
-     * System.out.println("Erros capturados no teste: " +
-     * errosContabilizadosManualmente);
-     * System.out.println("Erros registrados na classe Task: " +
-     * Task.totalStateTransitionErrors());
-     * 
-     * if (errosContabilizadosManualmente == Task.totalStateTransitionErrors()) {
-     * System.out.println("SUCESSO: Os números de erros batem.");
-     * } else {
-     * throw new Exception("FALHA: Inconsistência na contagem de erros!");
-     * }
-     * }
-     * 
-     * private static void testFluxoCorretoEMovimentacao() {
-     * System.out.println("--- Teste 2: Fluxo de Estados Correto ---");
-     * User anderson = new User("Anderson", "anderson@nexus.com");
-     * Task t1 = new Task("Desenvolver RAG", LocalDate.now().plusDays(10));
-     * 
-     * try {
-     * t1.moveToInProgress(anderson);
-     * if (t1.getStatus() == TaskStatus.IN_PROGRESS && t1.getOwner() == anderson) {
-     * System.out.println("SUCESSO: Task movida para IN_PROGRESS e dono atribuído."
-     * );
-     * }
-     * 
-     * t1.markAsDone();
-     * if (t1.getStatus() == TaskStatus.DONE) {
-     * System.out.println("SUCESSO: Task finalizada com sucesso.");
-     * }
-     * } catch (Exception e) {
-     * System.err.println("FALHA: Erro em fluxo válido: " + e.getMessage());
-     * }
-     * System.out.println();
-     * }
-     * 
-     * private static void testTrocaDeDonoEIntegridade() {
-     * System.out.println("--- Teste 3: Troca de Usuários e Integridade ---");
-     * User dev1 = new User("Dev 1", "dev1@nexus.com");
-     * User dev2 = new User("Dev 2", "dev2@nexus.com");
-     * 
-     * Task taskA = new Task("Refatorar API", LocalDate.now().plusDays(2));
-     * Task taskB = new Task("Documentar", LocalDate.now().plusDays(3));
-     * 
-     * // Atribuindo inicialmente
-     * dev1.addTask(taskA); // taskA agora é do dev1
-     * dev2.addTask(taskB); // taskB agora é do dev2
-     * 
-     * // Trocando: Passando a taskA para o dev2 (ela deve estar em TO_DO)
-     * try {
-     * taskA.setOwner(dev2);
-     * 
-     * // Verificações de integridade
-     * boolean taskANoDev2 = dev2.getUserTasks().contains(taskA);
-     * boolean taskANaoNoDev1 = !dev1.getUserTasks().contains(taskA);
-     * boolean donoDaTaskAehDev2 = (taskA.getOwner() == dev2);
-     * 
-     * if (taskANoDev2 && taskANaoNoDev1 && donoDaTaskAehDev2) {
-     * System.out.
-     * println("SUCESSO: TaskA transferida do Dev1 para o Dev2 corretamente.");
-     * } else {
-     * System.err.println("FALHA: Erro na sincronização da transferência.");
-     * }
-     * 
-     * System.out.println("Tasks do Dev 2: " + dev2.getUserTasks().size()); // Deve
-     * ser 2 (taskA e taskB)
-     * 
-     * } catch (Exception e) {
-     * System.err.println("FALHA: Erro ao transferir dono: " + e.getMessage());
-     * }
-     * System.out.println();
-     * }
-     */
 }

@@ -88,4 +88,24 @@ public class Project {
                 nome, totalBudget, currentEffort, tasks.size());
     }
 
+    /**
+     * Project Health: Para o projeto atual, calcular o percentual de conclusão
+     * (Tarefas DONE / Total de Tarefas).
+     * 
+     * @return Percentual de tarefas completadas.
+     */
+    public double projectHealth() {
+        if (this.tasks.isEmpty()) {
+            return 0.0;
+        }
+
+        long totalTasks = this.tasks.size();
+        long completedTasks = this.tasks.stream()
+                .filter(task -> task.getStatus() == TaskStatus.DONE)
+                .count();
+
+        return (completedTasks * 100.0) / totalTasks;
+
+    }
+
 }
