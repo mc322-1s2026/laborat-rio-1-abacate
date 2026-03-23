@@ -251,6 +251,10 @@ public class Task {
     // Private methods.
     //
 
+    public static void internalResetId() {
+        Task.nextId = 1;
+    }
+
     /**
      * Se o status do objeto mudar de qualquer status para IN_PROGRESS,
      * activeWorkload deve ser incrementado.

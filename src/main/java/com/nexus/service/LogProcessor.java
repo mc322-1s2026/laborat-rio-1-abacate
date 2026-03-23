@@ -287,10 +287,14 @@ public class LogProcessor {
 
             switch (action) {
                 case LogCommand.CREATE_USER -> {
-                    users.add(LogProcessor.actionCreateUser(args));
+                    User u = LogProcessor.actionCreateUser(args);
+                    users.add(u);
+                    workspace.addUser(u);
                 }
                 case LogCommand.CREATE_PROJECT -> {
-                    projects.add(LogProcessor.actionCreateProject(args));
+                    Project p = LogProcessor.actionCreateProject(args);
+                    projects.add(p);
+                    workspace.addProject(p);
                 }
                 case LogCommand.CREATE_TASK -> {
                     // workspace.addTask(LogProcessor.actionCreateTask(args, projects));
@@ -344,7 +348,7 @@ public class LogProcessor {
                         .filter(line -> !line.isBlank())
                         .filter(line -> !line.startsWith("#"))
                         .forEach(line -> {
-
+                            System.out.println("$ " + line);
                             String[] p = line.split(";");
 
                             try {

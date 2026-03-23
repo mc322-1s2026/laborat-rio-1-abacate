@@ -3,12 +3,16 @@ package com.nexus.tests;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.nexus.model.Task;
 import com.nexus.model.User;
 import com.nexus.service.LogProcessor;
 import com.nexus.service.Workspace;
 
 public class TestLogProcessor {
+
     public static void run() {
+        User.internalResetId();
+        Task.internalResetId();
         System.out.println("=== INICIANDO TESTES ===\n");
         TestLogProcessor.processCommandsHappyFlow();
         TestLogProcessor.processCommandsErros();

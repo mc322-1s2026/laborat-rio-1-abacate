@@ -175,10 +175,10 @@ public class Main {
     }
 
     private static void runTests() {
+        TestLogProcessor.run();
         TestUser.run();
         TestTask.run();
         TestProject.run();
-        TestLogProcessor.run();
         TestWorkspace.run();
     }
 }
