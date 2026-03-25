@@ -183,10 +183,6 @@ public class LogProcessor {
             }
             case IN_PROGRESS -> {
                 User u = task.getOwner();
-                // if (u == null) {
-                // throw new NexusValidationException(
-                // "Não é possivel mudar Task para IN_PROGRESS sem ela ter um usuário.");
-                // }
                 task.moveToInProgress(u);
             }
             case BLOCKED -> {
