@@ -9,7 +9,7 @@ import com.nexus.model.Task;
 public class TestProject {
 
     public static void run() {
-        System.out.println("=== INICIANDO TESTES ===\n");
+        System.out.println("=== INICIANDO TESTES TestProject===\n");
         TestProject.testAdicaoSimplesSucesso();
         TestProject.testEstouroDeOrcamento();
         System.out.println("\n=== TODOS OS TESTES EXECUTADOS COM SUCESSO ===");

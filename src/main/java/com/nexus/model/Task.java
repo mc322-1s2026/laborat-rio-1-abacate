@@ -60,6 +60,7 @@ public class Task {
                     "Não é possível mover para IN_PROGRESS Task sem Usuário.");
         } else if ((this.owner == null) && (user != null)) {
             if (this.status != TaskStatus.TO_DO) {
+                Task.totalValidationErrors++;
                 throw new NexusValidationException(
                         "Task ainda não possui usuário atribuído, e ela somente pode ser posta IN_PROGRESS com um usuário. Mova ela para TO_DO antes de executar essa ação.");
             }

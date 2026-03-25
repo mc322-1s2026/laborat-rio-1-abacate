@@ -9,7 +9,7 @@ import com.nexus.model.User;
 public class TestUser {
 
     public static void run() {
-        System.out.println("=== INICIANDO TESTES ===\n");
+        System.out.println("=== INICIANDO TESTES TestUser===\n");
         TestUser.testInstanciacaoComDadosInvalidos();
         TestUser.testInstanciacaoCorretaEId();
         TestUser.testFluxoCorretoEMovimentacao();

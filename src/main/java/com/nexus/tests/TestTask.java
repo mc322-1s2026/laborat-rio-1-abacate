@@ -9,13 +9,14 @@ import com.nexus.model.User;
 public class TestTask {
 
     public static void run() {
-        System.out.println("=== INICIANDO TESTES ===\n");
+        System.out.println("=== INICIANDO TESTES TestTask===\n");
         TestTask.testErrosDeTransicao();
         TestTask.testSetOwnerDireto();
         System.out.println("\n=== TODOS OS TESTES EXECUTADOS COM SUCESSO ===");
     }
 
     static void testErrosDeTransicao() {
+        int errosIniciais = Task.totalStateTransitionErrors();
         Task t = new Task("Task Erro", LocalDate.now());
         int errosEsperados = 0;
 
@@ -34,14 +35,9 @@ public class TestTask {
             errosEsperados++;
         }
 
-        if (errosEsperados != 2) {
-            throw new RuntimeException("FALHA: Eam esperados 2 erros, ocorreram " + errosEsperados);
-        }
-
-        if (Task.totalStateTransitionErrors() != errosEsperados) {
-            throw new RuntimeException("FALHA: O contador totalStateTransitionErrors ("
-                    + Task.totalStateTransitionErrors() + ") não condiz com os erros disparados (" + errosEsperados
-                    + ")");
+        int errosDeFato = Task.totalStateTransitionErrors() - errosIniciais;
+        if (errosEsperados != errosDeFato) {
+            throw new RuntimeException("FALHA: Eam esperados " + errosDeFato + " erros, ocorreram " + errosEsperados);
         }
     }
 

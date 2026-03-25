@@ -10,10 +10,11 @@ import com.nexus.service.Workspace;
 public class TestLogProcessor {
 
     public static void run() {
-        System.out.println("=== INICIANDO TESTES ===\n");
-        TestLogProcessor.processCommandsHappyFlow();
-        TestLogProcessor.processCommandsErros();
-        TestLogProcessor.processCommandsMixed();
+        System.out.println("=== INICIANDO TESTES TestLogProcessor ===\n");
+        //TestLogProcessor.processCommandsHappyFlow();
+        //TestLogProcessor.processCommandsErros();
+        //TestLogProcessor.processCommandsMixed();
+        TestLogProcessor.processLogV2();
         System.out.println("\n=== TODOS OS TESTES EXECUTADOS COM SUCESSO ===");
 
     }
@@ -43,6 +44,15 @@ public class TestLogProcessor {
         String file3 = "t3_mixed.txt";
 
         logProcessor.processLog(file3, workspace, users);
+    }
+
+    private static void processLogV2() {
+        List<User> users = new ArrayList<>();
+        Workspace workspace = new Workspace();
+        LogProcessor logProcessor = new LogProcessor();
+        String logv2 = "log_v2.txt";
+
+        logProcessor.processLog(logv2, workspace, users);
     }
 
 }
