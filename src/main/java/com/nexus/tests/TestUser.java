@@ -9,9 +9,6 @@ import com.nexus.model.User;
 public class TestUser {
 
     public static void run() {
-        User.internalResetId();
-        Task.internalResetId();
-
         System.out.println("=== INICIANDO TESTES ===\n");
         TestUser.testInstanciacaoComDadosInvalidos();
         TestUser.testInstanciacaoCorretaEId();

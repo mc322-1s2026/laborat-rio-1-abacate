@@ -185,8 +185,4 @@ public class User {
         this.tasks.removeIf(t -> t.getId() == task.getId());
     }
 
-    public static void internalResetId() {
-        User.nextId = 1;
-    }
-
 }
